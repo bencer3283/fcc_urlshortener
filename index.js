@@ -56,6 +56,17 @@ app.route('/api/shorturl').post((req, res) => {
           original_url: submittedUrl, 
           short_url: doc.proxy + 1
         });
+        let addressToAdd = new Address({
+          originalURL: submittedUrl,
+          proxy: doc.proxy + 1
+        });
+        addressToAdd.save()
+        .then((doc) => {
+          console.log('saved')
+        })
+        .catch((err) => {
+          console.error(err);
+        })
       });
     }
   });
