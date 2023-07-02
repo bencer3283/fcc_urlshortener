@@ -41,16 +41,29 @@ app.get('/', function(req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
+const findMaxProxy = function(done, url, response){
+  Address.findOne().sort('-proxy').exec((err, doc) => {
+    done(err, doc, url, response);
+  });
+}
+
+const computeProxyAndSend = function(err, doc, originalUrl, res){
+  res.json({
+    original_url: originalUrl, 
+    short_url: doc.proxy + 1
+  });
+}
+
 // Your first API endpoint
 app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.post('/api/shorturl', (req, res) => {
+app.route('/api/shorturl').post((req, res) => {
   let submittedUrl = req.body.url;
   dns.lookup(submittedUrl, (err, addr, fami) => {
     if (err) res.json({error: 'invalid url'});
-    else res.json({original_url: submittedUrl});
+    else findMaxProxy(computeProxyAndSend, submittedUrl, res);
   });
 })
 
