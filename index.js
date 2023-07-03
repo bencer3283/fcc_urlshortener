@@ -50,7 +50,10 @@ app.route('/api/shorturl').post((req, res) => {
   let submittedUrl = req.body.url;
   console.log(submittedUrl);
   dns.lookup(submittedUrl, (err, addr, fami) => {
-    if (err) res.json({error: 'invalid url'});
+    if (err) {
+      console.log('invalid url posted');
+      res.json({error: 'invalid url'});
+    }
     else {
       Address.findOne().sort('-proxy').exec((err, doc) => {
         res.json({
