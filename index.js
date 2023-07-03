@@ -53,7 +53,6 @@ app.post('/api/shorturl', (req, res) => {
   dns.lookup(submittedUrl, (err, addr, fami) => {
     if (err && !exceptionRegex.test(err.hostname)) {
       console.log('invalid url posted');
-      console.log(err);
       res.json({error: 'invalid url'});
     }
     else {
@@ -81,8 +80,9 @@ app.post('/api/shorturl', (req, res) => {
 app.get('/api/shorturl/:proxy', (req, res) => {
   let proxy = +req.params.proxy;
   Address.findOne({proxy: proxy}).then((doc) => {
-    let httpRegex = new RegExp('^http://');
+    let httpRegex = new RegExp('^http');
     let redirectTo = doc.originalURL;
+    console.log(redirectTo);
     if (!httpRegex.test(redirectTo)) redirectTo = 'http://'.concat(redirectTo);
     res.redirect(redirectTo);
   }).catch((err) => {
