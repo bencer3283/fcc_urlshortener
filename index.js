@@ -46,7 +46,7 @@ app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.route('/api/shorturl').post((req, res) => {
+app.post('/api/shorturl', (req, res) => {
   let submittedUrl = req.body.url;
   console.log(submittedUrl);
   let exceptionRegex = new RegExp('^https://urlshortener-48ov.onrender.com');
@@ -76,7 +76,19 @@ app.route('/api/shorturl').post((req, res) => {
       });
     }
   });
-})
+});
+
+app.get('/api/shorturl/:proxy', (req, res) => {
+  let proxy = +req.params.proxy;
+  Address.findOne({proxy: proxy}).then((doc) => {
+    let httpRegex = new RegExp('^http://');
+    let redirectTo = doc.originalURL;
+    if (!httpRegex.test(redirectTo)) redirectTo = 'http://'.concat(redirectTo);
+    res.redirect(redirectTo);
+  }).catch((err) => {
+    console.log(err);
+  })
+});
 
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
