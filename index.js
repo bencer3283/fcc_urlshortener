@@ -49,9 +49,11 @@ app.get('/api/hello', function(req, res) {
 app.route('/api/shorturl').post((req, res) => {
   let submittedUrl = req.body.url;
   console.log(submittedUrl);
+  let exceptionRegex = new RegExp('^https://urlshortener-48ov.onrender.com');
   dns.lookup(submittedUrl, (err, addr, fami) => {
-    if (err) {
+    if (err && !exceptionRegex.test(err.hostname)) {
       console.log('invalid url posted');
+      console.log(err);
       res.json({error: 'invalid url'});
     }
     else {
